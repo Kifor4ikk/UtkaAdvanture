@@ -18,7 +18,8 @@ public class GunRotate : MonoBehaviour
     [SerializeField] private Transform bulletPos;
     //to transform image
     private Transform playerTransform;
-    private float correct = 0.07F;
+    private float correctY = 0.1F;
+    private float correctX = 0.03F;
 
     [SerializeField] private float ShootingTemp = 0.3F;
     private float ShootingTempCurrent = 0.0F;
@@ -40,13 +41,17 @@ public class GunRotate : MonoBehaviour
         if (
             (Quaternion.Euler(0f, 0f, rotateY + offset).z < 0.96 && Quaternion.Euler(0f, 0f, rotateY + offset).z > 0.20) &&
             (Quaternion.Euler(0f, 0f, rotateY + offset).w < 0.96 && Quaternion.Euler(0f, 0f, rotateY + offset).w > 0.20)
-        ) { image.sortingOrder = 0; correct = 0.03F; }
-        else { image.sortingOrder = 2; correct = 0.07f; }
+        ) { image.sortingOrder = 0; correctY = 0.03F; correctX = 0.0f;}
+        else { image.sortingOrder = 2; correctY = 0.1f; correctX = 0.02f; }
         //Layers
         if (Quaternion.Euler(0f, 0f, rotateY + offset).z > -0.7 && Quaternion.Euler(0f, 0f, rotateY + offset).z < 0.70) image.flipY = false;
-        else image.flipY = true;
+        else
+        {
+            
+            image.flipY = true;
+        }
         //Just move with player
-        this.transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y - correct,
+        this.transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y - correctY,
             playerTransform.position.z);
         //Shooting
         if (Input.GetMouseButton(0) && ShootingTempCurrent <= 0)

@@ -36,9 +36,9 @@ TextureImporter:
     filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 0
-    wrapV: 0
-    wrapW: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -130,8 +130,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aa5fa6f7403c43e44b27cb0f6c160980
-      internalID: -1199374892
+      spriteID: 86f99a3dfda23d84eae52ce276f46871
+      internalID: 1066298150
       vertices: []
       indices: 
       edges: []
@@ -151,8 +151,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fc064b5f7d790694990816511c84018c
-      internalID: 1861588728
+      spriteID: 4bbe9e241d5c8b240a77e35c94e8d60c
+      internalID: 913277140
       vertices: []
       indices: 
       edges: []
@@ -172,8 +172,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d0ce08b38e114df43b2c8dd950013648
-      internalID: -6706205
+      spriteID: 0c9d229e8aac117429657c0a653cf6ba
+      internalID: -1108567484
       vertices: []
       indices: 
       edges: []
@@ -193,8 +193,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dbe503147fe86974dbea2bea52cf0af5
-      internalID: 1423206666
+      spriteID: 65c8fef69db984d4c875a489554d58f3
+      internalID: -1668348610
       vertices: []
       indices: 
       edges: []
@@ -214,8 +214,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1b932d8bac2bc9b4a8a85bee18eba179
-      internalID: -1933034420
+      spriteID: 4972b8c673e35404e8e6008d146e4b2e
+      internalID: 1833382276
       vertices: []
       indices: 
       edges: []
@@ -235,8 +235,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c0e9648927277d944aa3aa65ea7d0653
-      internalID: -1003372892
+      spriteID: ff68645ea5cf9e34cb9adce9e4ef9b27
+      internalID: 957500123
       vertices: []
       indices: 
       edges: []
@@ -245,10 +245,10 @@ TextureImporter:
       name: UI_6
       rect:
         serializedVersion: 2
-        x: 4
-        y: 194
-        width: 111
-        height: 26
+        x: 5
+        y: 195
+        width: 109
+        height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -256,8 +256,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 902e2898e923efa469bd2e552e1efec7
-      internalID: 1509131591
+      spriteID: 00fbac8984bdb1141b12d5801e4515d4
+      internalID: 1324027940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_7
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 188
+        width: 35
+        height: 5
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dffe4940c22f66748af600c8c35a1d4b
+      internalID: -90078023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_8
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 184
+        width: 33
+        height: 3
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9013d58e2400f1c40ba5388808aa0353
+      internalID: -57478337
       vertices: []
       indices: 
       edges: []
@@ -273,13 +315,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      UI_1: 1861588728
-      UI_4: -1933034420
-      UI_2: -6706205
-      UI_3: 1423206666
-      UI_0: -1199374892
-      UI_6: 1509131591
-      UI_5: -1003372892
+      UI_1: 913277140
+      UI_4: 1833382276
+      UI_2: -1108567484
+      UI_3: -1668348610
+      UI_0: 1066298150
+      UI_7: -90078023
+      UI_8: -57478337
+      UI_6: 1324027940
+      UI_5: 957500123
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

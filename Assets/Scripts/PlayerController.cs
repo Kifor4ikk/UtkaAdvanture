@@ -30,8 +30,6 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Horizontal", Camera.main.ScreenToWorldPoint(Input.mousePosition).x - playerBody.position.x);
         animator.SetFloat("Vertical", Camera.main.ScreenToWorldPoint(Input.mousePosition).y - playerBody.position.y);
         animator.SetFloat("Speed", vec.sqrMagnitude);
-        
-
     }
 
     private void FixedUpdate() {

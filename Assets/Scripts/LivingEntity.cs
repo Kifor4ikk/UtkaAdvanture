@@ -6,6 +6,7 @@ public class LivingEntity : MonoBehaviour
 {
 
     [SerializeField] private int HP = 20;
+    [SerializeField] private int HPMax = 20;
 
     [SerializeField] private Collider2D body;
 
@@ -19,5 +20,16 @@ public class LivingEntity : MonoBehaviour
     {
         this.HP -= damage;
     }
+
+    public int getHP()
+    {
+        return this.HP;
+    }
+    
+    public int getMaxHP()
+    {
+        return this.HPMax;
+    }
+    
     
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -9,25 +10,26 @@ public class Bullet : MonoBehaviour
 
     [SerializeField] private float speed;
     [SerializeField] private float lifetime;
-    [SerializeField] private float distance;
     [SerializeField] private float damage;
+    
+    [SerializeField] private Rigidbody2D bulletBody;
+    [SerializeField] private Collider2D bulletHitBox;
+    
+    private float livingTime;
 
     // Update is called once per frame
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Enemy") collision.gameObject.GetComponent<LivingEntity>().takeDamage((int)damage);
+        
+        Destroy(gameObject);
+    }
     void Update()
     {
-        RaycastHit2D hitInfo = Physics2D.Raycast(transform.position, transform.up, distance);
-        //Check collision
-        if (hitInfo.collider != null)
-        {    
-            Debug.Log("COLLISION! " + hitInfo.collider);
-            //if collision enemy damage enemy
-            if(hitInfo.collider.CompareTag("Enemy"))
-            {
-                hitInfo.collider.GetComponent<LivingEntity>().takeDamage((int)damage);
-            }
-            //after collision delete;
-            Destroy(gameObject);
-        }
+        bulletBody.position = Vector2.right * speed * Time.deltaTime;
+        livingTime += Time.deltaTime;
+        if (livingTime > lifetime) Destroy(gameObject);
         //Move object
         transform.Translate(Vector2.right * speed * Time.deltaTime);
     }
