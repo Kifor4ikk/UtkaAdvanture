@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerBody;
     [SerializeField] private Animator animator;
     
-    [SerializeField] private int dashCoolDownmax = 4;
+    [SerializeField] private int dashCoolDownMax = 4;
     [SerializeField] private static float dashCoolDownCurrent = 0;
     [SerializeField] private float dashForce = 1.05F;
     private bool isDashCooldown = false;

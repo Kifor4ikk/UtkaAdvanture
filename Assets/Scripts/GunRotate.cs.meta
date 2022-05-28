@@ -3,7 +3,14 @@ guid: 853bea56c028d0145a3424375e64ab21
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - player: {instanceID: 0}
+  - image: {instanceID: 0}
+  - playerSprite: {instanceID: 0}
+  - bullet: {instanceID: 0}
+  - bulletPos: {instanceID: 0}
+  - bulletPosFix: {instanceID: 0}
+  - shootingImage: {fileID: 7858047002102108384, guid: 1518ff5352b3b244f89eaa764e689e74, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

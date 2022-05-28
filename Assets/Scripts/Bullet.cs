@@ -14,6 +14,8 @@ public class Bullet : MonoBehaviour
     
     [SerializeField] private Rigidbody2D bulletBody;
     [SerializeField] private Collider2D bulletHitBox;
+
+    [SerializeReference] private GameObject impactAnimation;
     
     private float livingTime;
 
@@ -23,6 +25,7 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.tag == "Enemy") collision.gameObject.GetComponent<LivingEntity>().takeDamage((int)damage);
         
+        Instantiate(impactAnimation, this.transform.position, transform.rotation);
         Destroy(gameObject);
     }
     void Update()

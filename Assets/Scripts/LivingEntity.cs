@@ -9,11 +9,15 @@ public class LivingEntity : MonoBehaviour
     [SerializeField] private int HPMax = 20;
 
     [SerializeField] private Collider2D body;
+    [SerializeField] private GameObject deathAnimation;
 
     void FixedUpdate()
     {
-        if (HP <= 0) Destroy(gameObject);
-        if (body.isTrigger) ;
+        if (HP <= 0)
+        {
+            Instantiate(deathAnimation, this.transform.position, transform.rotation);
+            Destroy(gameObject);
+        }
     }
 
     public void takeDamage(int damage)
