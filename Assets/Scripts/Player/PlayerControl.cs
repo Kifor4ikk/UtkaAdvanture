@@ -64,42 +64,43 @@ public class PlayerControl : MonoBehaviour
 
         foot.SetFloat("Horizontal", Camera.main.ScreenToWorldPoint(Input.mousePosition).x - playerBody.position.x);
         foot.SetFloat("Vertical", Camera.main.ScreenToWorldPoint(Input.mousePosition).y - playerBody.position.y);
-        foot.SetFloat("Speed", speedCurrent);
+        foot.SetFloat("Speed", vec.magnitude);
         
         //Drop/Get weapon
         if (Input.GetKeyDown(KeyCode.Z))
         {
             Debug.Log("Pressed Z");
-            if (gun != null && gunObject != null)
+            if (isWeaponNear)
             {
-                Debug.Log("Drop gun");
-                gunObject.GetComponent<SimpleGun>().isUsedByPlayer = false;
-                Instantiate(gunObject, playerBody.transform.position, transform.rotation);
-                Destroy(gunObject);
-                gun = null;
-                gunObject = null;
+                if (gunObject != null)
+                {
+                    gunObject.GetComponent<SimpleGun>().usedByPlayer(false);
+                    Instantiate(gunObject, playerBody.transform.position, transform.rotation);
+                    Destroy(gunObject);
+                }
                 
-            }
-            if (gun == null && gunObject == null && isWeaponNear)
-            {
-                Debug.Log("PickedUp gun");
                 gunObject = gunNear;
-                gun = gunNear.GetComponent<SimpleGun>();
-                gun.isUsedByPlayer = true;
+                gunObject.GetComponent<SimpleGun>().usedByPlayer(true);
+                
+                gunObject.GetComponent<SimpleGun>().setPlayerFace(face);
+                gunObject.GetComponent<SimpleGun>().setPlayerBody(playerBody);
+                gunObject.GetComponent<SimpleGun>().setPlayerSprite(body.GetComponent<SpriteRenderer>());
+                
+                gun = gunObject.GetComponent<SimpleGun>();
+                gunNear = null;
             }
+            
         }
-        gunNear = null;
         //Shooting
         if (gunObject != null)
         {
-            gunObject.transform.position = playerBody.transform.position;
             if (Input.GetMouseButton(0))
             {
                 gun.shoot();
                 slowDownTimeCurrent = 0.1f;
             }
 
-            if (Input.GetMouseButton(2))
+            if (Input.GetMouseButton(1))
             {
                 gun.specialShoot();
                 slowDownTimeCurrent = 0.2f;
@@ -142,11 +143,15 @@ public class PlayerControl : MonoBehaviour
     
     void OnTriggerStay2D (Collider2D trigger)
     {
-        if (trigger.gameObject.tag == "weapon" && !trigger.gameObject.GetComponent<SimpleGun>().isUsedByPlayer)
+        if (trigger.gameObject.tag == "weapon" && !trigger.gameObject.GetComponent<SimpleGun>().IsUsedByPlayer)
         {
             gunNear = trigger.gameObject;
             isWeaponNear = true;
             timeToDrawHand = 0.1f;
+        }
+        else
+        {
+            isWeaponNear = false;
         }
     }
     
@@ -173,8 +178,8 @@ public class PlayerControl : MonoBehaviour
         return isWeaponNear;
     }
 
-    public static string getWeapon()
+    public static SimpleGun getWeapon()
     {
-        return gun + " | " + gunObject;
+        return gun;
     }
 }

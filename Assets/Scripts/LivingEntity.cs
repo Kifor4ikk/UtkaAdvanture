@@ -5,12 +5,18 @@ using UnityEngine;
 public class LivingEntity : MonoBehaviour
 {
 
-    [SerializeField] private int HP = 20;
+    private int HP;
     [SerializeField] private int HPMax = 20;
 
     [SerializeField] private Collider2D body;
     [SerializeField] private GameObject deathAnimation;
 
+
+    void Start()
+    {
+        HP = HPMax;
+        body = this.GetComponent<Collider2D>();
+    }
     void FixedUpdate()
     {
         if (HP <= 0)

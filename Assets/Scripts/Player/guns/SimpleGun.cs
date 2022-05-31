@@ -8,30 +8,32 @@ public abstract class SimpleGun : MonoBehaviour
 {
     //Shooting Settings
     //shooting temp for attack speed control
-    [SerializeField] public float shootingTemp;
+    [SerializeField] private float shootingTemp;
 
-    public float shootingTempCurrent;
+    private float shootingTempCurrent;
 
     //special attack 
-    [SerializeField] public float specialShootingTemp;
+    [SerializeField] private float specialShootingTemp;
 
-    public float specialShootingTempCurrent;
+    private float specialShootingTempCurrent;
 
     //ammo
-    [SerializeField] public int ammo;
-
-    public int ammoCurrent;
+    [SerializeField] private int ammo;
+    
+    private int ammoCurrent;
 
     //Reload
-    [SerializeField] public float reloadTime;
-
-    public float reloadTimeCurrent;
+    [SerializeField] private float reloadTime;
+    
+    private float reloadTimeCurrent;
 
     //Bullet 
-    [SerializeField] public GameObject bullet;
-    [SerializeField] public GameObject specialBullet;
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private GameObject specialBullet;
 
-    //Textures
+    [SerializeField] private float bulletDamage;
+    [SerializeField] private float bulletSpeed;
+    [SerializeField] private float bulletLifeTime;
     //Gun image    
     private SpriteRenderer gunImage;
 
@@ -42,40 +44,51 @@ public abstract class SimpleGun : MonoBehaviour
     [SerializeField] private GameObject shootingPoint;
     [SerializeField] private GameObject shootingPointFlip;
 
-    [NonSerialized] public GameObject currentShootingPoint;
+    [NonSerialized] private GameObject currentShootingPoint;
 
     //Shooting animation(when u click shoot spawn particle before trunk(ствол)
-    [SerializeField] public GameObject shootingAnimation;
-
+    [SerializeField] private GameObject shootingAnimation;
+    
+    
     //Player texture for check when we should change shooting point, layer, move up or down and etc;
     [SerializeField] private SpriteRenderer playerSprite;
 
+    //to draw shooting face animation mb in future
     [SerializeField] private Animator playerFace;
 
-    //player body to fix 
+    //player body to change position
     [SerializeField] private Rigidbody2D player;
 
     //Audio
-    [SerializeField] public AudioSource shootingSound;
-    [SerializeField] public AudioSource outOfAmmoSound;
+    [SerializeField] private AudioSource audioSource;
+
+    [SerializeField] private AudioClip shootingSound;
+    [SerializeField] private AudioClip outOfAmmoSound;
+    [SerializeField] private AudioClip reloadSound;
+    
     [SerializeField] private string entityName;
 
-    public bool isUsedByPlayer = true;
+    public bool isUsedByPlayer = false;
 
     void Start()
     {
         shootingTemp /= BoosterVariables.gameSpeed;
         specialShootingTemp /= BoosterVariables.gameSpeed;
         reloadTime /= BoosterVariables.gameSpeed;
-
+        bulletSpeed /= BoosterVariables.gameSpeed;
+        bulletLifeTime /= BoosterVariables.gameSpeed;
         gunImage = this.GetComponent<SpriteRenderer>();
         gunAnimation = this.GetComponent<Animator>();
-
-        outOfAmmoSound.volume = BoosterVariables.volume;
-        shootingSound.volume = BoosterVariables.volume;
+        
+        bullet.GetComponent<SimpleBullet>().setDamage(bulletDamage);
+        bullet.GetComponent<SimpleBullet>().setLifeTime(bulletLifeTime);
+        bullet.GetComponent<SimpleBullet>().setSpeed(bulletSpeed);
+        
+        audioSource.volume = BoosterVariables.volume;
+        
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (isUsedByPlayer)
         {
@@ -91,23 +104,14 @@ public abstract class SimpleGun : MonoBehaviour
             //ANIMATION
             if (playerSprite.sprite.name.Contains(entityName + "_back"))
             {
-                Debug.Log("Test ->");
-                gunImage.sortingOrder = 0;
-                if (playerSprite.sprite.name == (entityName + "_back"))
-                    gunImage.transform.position =
-                        transform.position = new Vector3(player.position.x, player.position.y);
-                else if (playerSprite.sprite.name == (entityName + "_back_right"))
-                    gunImage.transform.position = transform.position =
-                        new Vector3(player.position.x + 0.05f, player.position.y - 0.05f);
-                else if (playerSprite.sprite.name == (entityName + "_back_left"))
-                    gunImage.transform.position = transform.position =
-                        new Vector3(player.position.x - 0.05f, player.position.y - 0.05f);
+                Debug.Log("Test -> ");
+                gunImage.sortingOrder = -3;
+                transform.position = new Vector3(player.transform.position.x-0.01f, player.transform.position.y-0.1f);
             }
             else
             {
-                Debug.Log("Test -> 2");
                 gunImage.sortingOrder = 2;
-                gunImage.transform.position = new Vector3(player.position.x, player.position.y);
+                transform.position = new Vector3(player.transform.position.x-0.03f, player.transform.position.y-0.2f);
             }
 
             Vector3 rotate = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
@@ -124,16 +128,16 @@ public abstract class SimpleGun : MonoBehaviour
                 currentShootingPoint = shootingPointFlip;
             }
         }
-
-        //Debug.Log("-> " + transform.position);
     }
 
     public void reload()
     {
-        if (ammoCurrent < ammo)
+        if (ammoCurrent < ammo && shootingTempCurrent <= 0)
         {
+            audioSource.clip = reloadSound;
             reloadTimeCurrent = reloadTime;
             ammoCurrent = ammo;
+            audioSource.Play();
         }
     }
 
@@ -143,18 +147,59 @@ public abstract class SimpleGun : MonoBehaviour
         {
             if (shootingTempCurrent <= 0)
             {
+                audioSource.clip = shootingSound;
                 ammoCurrent -= 1;
                 shootingTempCurrent = shootingTemp;
                 Instantiate(bullet, currentShootingPoint.transform.position, transform.rotation);
-                Instantiate(shootingAnimation, currentShootingPoint.transform.position, transform.rotation);
-                shootingSound.Play();
+                if(shootingAnimation != null) Instantiate(shootingAnimation, currentShootingPoint.transform.position, transform.rotation);
+                audioSource.Play();
             }
         }
-        else outOfAmmoSound.Play();
+        else
+        {
+            if (shootingTempCurrent <= 0)
+            {
+                //shootingTempCurrent = 0.2f;
+                audioSource.clip = outOfAmmoSound;
+                audioSource.Play();
+            }
+            
+        }
     }
 
     public void specialShoot()
     {
         Debug.Log("Special shoot! Boom!");
     }
+
+    public void setPlayerBody(Rigidbody2D rigidbody2D)
+    {
+        this.player = rigidbody2D;
+    }
+
+    public void setPlayerFace(Animator face)
+    {
+        this.playerFace = face;
+    }
+
+    public void setPlayerSprite(SpriteRenderer spriteRenderer)
+    {
+        this.playerSprite = spriteRenderer;
+    }
+
+    public void usedByPlayer(bool used)
+    {
+        this.isUsedByPlayer = used;
+    }
+
+    public float getAmmoMax()
+    {
+        return this.ammo;
+    }
+
+    public float getAmmoCurrent()
+    {
+        return this.ammoCurrent;
+    }
+    public bool IsUsedByPlayer => isUsedByPlayer;
 }

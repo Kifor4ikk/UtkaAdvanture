@@ -1,19 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class SimpleBullet : MonoBehaviour
+public class SimpleBullet : MonoBehaviour
 {
-    
-    //Living time of bullet
-    [SerializeField] private float lifetime;
-    private float livingTime;
-    //Simple params
-    [SerializeField] private float speed;
-    private float damage = 10;
+    [SerializeField] private float damage = 10;
+    [SerializeField] private float speed = 10;
+    [SerializeField] private float lifeTime = 10;
+
+    private float lifeTimeCurrent = 0;
+
     //Bullet body to move it and check hit
     private Rigidbody2D bulletBody;
+
     private Collider2D bulletHitBox;
+
     //Impact animation 
     [SerializeReference] private GameObject impactAnimation;
 
@@ -23,28 +25,39 @@ public abstract class SimpleBullet : MonoBehaviour
         bulletBody = this.GetComponent<Rigidbody2D>();
         bulletHitBox = this.GetComponent<Collider2D>();
     }
+
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag != "player")
-        {
-            if (collision.gameObject.tag == "Enemy")
-                collision.gameObject.GetComponent<LivingEntity>().takeDamage((int) damage);
-            Instantiate(impactAnimation, this.transform.position, transform.rotation);
-            Destroy(gameObject);
-        }
+        Debug.Log("Collision!");
+
+        if (collision.gameObject.tag == "Enemy") collision.gameObject.GetComponent<LivingEntity>().takeDamage((int) damage);
+
+        
+        if(impactAnimation != null) Instantiate(impactAnimation, this.transform.position, transform.rotation);
+        Destroy(gameObject);
     }
-    
+
     void Update()
     {
         bulletBody.position = Vector2.right * speed * Time.deltaTime;
-        livingTime += Time.deltaTime;
-        if (livingTime > lifetime) Destroy(gameObject);
+        lifeTimeCurrent += Time.deltaTime;
+        if (lifeTimeCurrent > lifeTime) Destroy(gameObject);
         //Move object
         transform.Translate(Vector2.right * speed * Time.deltaTime);
     }
 
     public void setDamage(float dmg)
     {
-        damage = dmg;
+        this.damage = dmg;
+    }
+
+    public void setSpeed(float speed)
+    {
+        this.speed = speed;
+    }
+
+    public void setLifeTime(float lifeTime)
+    {
+        this.lifeTime = lifeTime;
     }
 }

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4812576309507923463}
   - component: {fileID: 4812576309507923456}
   - component: {fileID: 4812576309507923457}
-  - component: {fileID: 5397922765287656248}
   - component: {fileID: 6381597934918370730}
   m_Layer: 0
   m_Name: SCAR_BULLET 1
@@ -125,19 +124,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.16
---- !u!114 &5397922765287656248
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4812576309507923458}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40dcd5f1ee903a84fbb1c4d84668fd17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  livingTime: 5
 --- !u!114 &6381597934918370730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,12 +133,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4812576309507923458}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cef3e7d453da124f9004e22979996f5, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ef6c0e758402434881bd8cd8f563433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 15
-  lifetime: 5
   damage: 10
-  bulletBody: {fileID: 4812576309507923456}
-  bulletHitBox: {fileID: 4812576309507923457}
-  impactAnimation: {fileID: 8879309394287897438, guid: cd23bfacc9a505545a89428f30556315, type: 3}
+  speed: 10
+  lifeTime: 10
+  impactAnimation: {fileID: 0}
