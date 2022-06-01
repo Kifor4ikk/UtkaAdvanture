@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,6 +24,7 @@ public class BoosterVariables : MonoBehaviour
     private float immortalTimeCurrent;
 
     [SerializeField] public static float gameSpeed = 1f;
+    
 
     // Update is called once per frame
     void FixedUpdate()
@@ -76,6 +78,11 @@ public class BoosterVariables : MonoBehaviour
     {
         if (attackTempTimeCurrent > 0) return true;
         return false;
+    }
+
+    public static float getSeedChangeable()
+    {
+        return (float) (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
     }
     
 }

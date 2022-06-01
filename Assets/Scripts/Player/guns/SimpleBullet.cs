@@ -28,7 +28,7 @@ public class SimpleBullet : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Collision!");
+        //Debug.Log("Collision!");
 
         if (collision.gameObject.tag == "Enemy") collision.gameObject.GetComponent<LivingEntity>().takeDamage((int) damage);
 

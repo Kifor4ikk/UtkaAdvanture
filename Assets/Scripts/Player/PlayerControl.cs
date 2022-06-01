@@ -74,17 +74,17 @@ public class PlayerControl : MonoBehaviour
             {
                 if (gunObject != null)
                 {
-                    gunObject.GetComponent<SimpleGun>().usedByPlayer(false);
+                    gunObject.GetComponent<SimpleGun>().IsUsedByPlayer = false;
                     Instantiate(gunObject, playerBody.transform.position, transform.rotation);
                     Destroy(gunObject);
                 }
                 
                 gunObject = gunNear;
-                gunObject.GetComponent<SimpleGun>().usedByPlayer(true);
+                gunObject.GetComponent<SimpleGun>().IsUsedByPlayer = true;
                 
-                gunObject.GetComponent<SimpleGun>().setPlayerFace(face);
-                gunObject.GetComponent<SimpleGun>().setPlayerBody(playerBody);
-                gunObject.GetComponent<SimpleGun>().setPlayerSprite(body.GetComponent<SpriteRenderer>());
+                gunObject.GetComponent<SimpleGun>().PlayerFace = face;
+                gunObject.GetComponent<SimpleGun>().PlayerBody = playerBody;
+                gunObject.GetComponent<SimpleGun>().PlayerSprite = (body.GetComponent<SpriteRenderer>());
                 
                 gun = gunObject.GetComponent<SimpleGun>();
                 gunNear = null;

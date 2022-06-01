@@ -1,205 +1,265 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Timers;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = Unity.Mathematics.Random;
 
-public abstract class SimpleGun : MonoBehaviour
+public abstract class SimpleGun : Weapon
 {
-    //Shooting Settings
-    //shooting temp for attack speed control
-    [SerializeField] private float shootingTemp;
-
-    private float shootingTempCurrent;
-
-    //special attack 
-    [SerializeField] private float specialShootingTemp;
-
-    private float specialShootingTempCurrent;
-
     //ammo
     [SerializeField] private int ammo;
-    
     private int ammoCurrent;
-
     //Reload
     [SerializeField] private float reloadTime;
-    
     private float reloadTimeCurrent;
-
     //Bullet 
     [SerializeField] private GameObject bullet;
     [SerializeField] private GameObject specialBullet;
-
     [SerializeField] private float bulletDamage;
     [SerializeField] private float bulletSpeed;
     [SerializeField] private float bulletLifeTime;
-    //Gun image    
-    private SpriteRenderer gunImage;
-
-    //Animator
-    private Animator gunAnimation;
+    //accuracy from 0 to 180
+    [SerializeField] private float accuracy;
 
     //Shooting poing before flip and after;
     [SerializeField] private GameObject shootingPoint;
     [SerializeField] private GameObject shootingPointFlip;
-
     [NonSerialized] private GameObject currentShootingPoint;
-
     //Shooting animation(when u click shoot spawn particle before trunk(ствол)
     [SerializeField] private GameObject shootingAnimation;
-    
-    
-    //Player texture for check when we should change shooting point, layer, move up or down and etc;
-    [SerializeField] private SpriteRenderer playerSprite;
-
-    //to draw shooting face animation mb in future
-    [SerializeField] private Animator playerFace;
-
-    //player body to change position
-    [SerializeField] private Rigidbody2D player;
-
     //Audio
-    [SerializeField] private AudioSource audioSource;
-
-    [SerializeField] private AudioClip shootingSound;
     [SerializeField] private AudioClip outOfAmmoSound;
     [SerializeField] private AudioClip reloadSound;
-    
-    [SerializeField] private string entityName;
 
-    public bool isUsedByPlayer = false;
 
+    private Vector3 rotate;
     void Start()
     {
-        shootingTemp /= BoosterVariables.gameSpeed;
-        specialShootingTemp /= BoosterVariables.gameSpeed;
+        ShootingTemp /= BoosterVariables.gameSpeed;
+        SpecialShootingTemp /= BoosterVariables.gameSpeed;
         reloadTime /= BoosterVariables.gameSpeed;
         bulletSpeed /= BoosterVariables.gameSpeed;
         bulletLifeTime /= BoosterVariables.gameSpeed;
-        gunImage = this.GetComponent<SpriteRenderer>();
-        gunAnimation = this.GetComponent<Animator>();
-        
+        GunImage = this.GetComponent<SpriteRenderer>();
+        GunAnimation = this.GetComponent<Animator>();
+
+        if (accuracy > 180) accuracy = 180;
+        if (accuracy < 0) accuracy = 0;
+        accuracy /= 2;
         bullet.GetComponent<SimpleBullet>().setDamage(bulletDamage);
         bullet.GetComponent<SimpleBullet>().setLifeTime(bulletLifeTime);
         bullet.GetComponent<SimpleBullet>().setSpeed(bulletSpeed);
         
-        audioSource.volume = BoosterVariables.volume;
+        AudioSource.volume = BoosterVariables.volume;
         
     }
 
     void Update()
     {
-        if (isUsedByPlayer)
+        if (IsUsedByPlayer)
         {
             //Animator
-            gunAnimation.SetFloat("Shooting", shootingTempCurrent);
-            gunAnimation.SetFloat("Reload", reloadTimeCurrent);
-            playerFace.SetFloat("Shooting", shootingTempCurrent);
+            GunAnimation.SetFloat("Shooting", ShootingTempCurrent);
+            GunAnimation.SetFloat("Reload", reloadTimeCurrent);
+            PlayerFace.SetFloat("Shooting", ShootingTempCurrent);
             //Shooting cooldown
-            if (shootingTempCurrent > 0) shootingTempCurrent -= Time.deltaTime;
-            if (specialShootingTempCurrent > 0) specialShootingTempCurrent -= Time.deltaTime;
+            if (HandsImage != null) HandsImage.enabled = true;
+            if (ShootingTempCurrent > 0) ShootingTempCurrent -= Time.deltaTime;
+            if (SpecialShootingTempCurrent > 0) SpecialShootingTempCurrent -= Time.deltaTime;
             if (reloadTimeCurrent > 0) reloadTimeCurrent -= Time.deltaTime;
             
             //ANIMATION
-            if (playerSprite.sprite.name.Contains(entityName + "_back"))
+            if (PlayerSprite.sprite.name.Contains(EntityName + "_back"))
             {
                 Debug.Log("Test -> ");
-                gunImage.sortingOrder = -3;
-                transform.position = new Vector3(player.transform.position.x-0.01f, player.transform.position.y-0.1f);
+                GunImage.sortingOrder = -3;
+                if (HandsImage != null) HandsImage.sortingOrder = -3;
+                transform.position = new Vector3(PlayerBody.transform.position.x-0.01f, PlayerBody.transform.position.y-0.1f);
             }
             else
             {
-                gunImage.sortingOrder = 2;
-                transform.position = new Vector3(player.transform.position.x-0.03f, player.transform.position.y-0.2f);
+                GunImage.sortingOrder = 2;
+                if (HandsImage != null) HandsImage.sortingOrder = 4;
+                transform.position = new Vector3(PlayerBody.transform.position.x-0.03f, PlayerBody.transform.position.y-0.2f);
             }
 
-            Vector3 rotate = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+            rotate = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
             float rotateY = Mathf.Atan2(rotate.y, rotate.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0f, 0f, rotateY);
-            if (Quaternion.Euler(0f, 0f, rotateY).z > -0.7 && Quaternion.Euler(0f, 0f, rotateY).z < 0.70)
+
+            if (Mathf.Atan2(rotate.y, rotate.x) > 1.57f || Mathf.Atan2(rotate.y, rotate.x) < -1.57f)
             {
-                gunImage.flipY = false;
-                currentShootingPoint = shootingPoint;
+                
+                GunImage.flipY = true;
+                currentShootingPoint = shootingPointFlip;
+                
             }
             else
             {
-                gunImage.flipY = true;
-                currentShootingPoint = shootingPointFlip;
-            }
-        }
-    }
-
-    public void reload()
-    {
-        if (ammoCurrent < ammo && shootingTempCurrent <= 0)
-        {
-            audioSource.clip = reloadSound;
-            reloadTimeCurrent = reloadTime;
-            ammoCurrent = ammo;
-            audioSource.Play();
-        }
-    }
-
-    public void shoot()
-    {
-        if (ammoCurrent > 0 && reloadTimeCurrent <= 0)
-        {
-            if (shootingTempCurrent <= 0)
-            {
-                audioSource.clip = shootingSound;
-                ammoCurrent -= 1;
-                shootingTempCurrent = shootingTemp;
-                Instantiate(bullet, currentShootingPoint.transform.position, transform.rotation);
-                if(shootingAnimation != null) Instantiate(shootingAnimation, currentShootingPoint.transform.position, transform.rotation);
-                audioSource.Play();
+                GunImage.flipY = false;
+                currentShootingPoint = shootingPoint;
             }
         }
         else
         {
-            if (shootingTempCurrent <= 0)
+            if (HandsImage != null) HandsImage.enabled = false;
+        }
+    }
+
+    public override void reload()
+    {
+        if (ammoCurrent < ammo && ShootingTempCurrent <= 0)
+        {
+            AudioSource.clip = reloadSound;
+            reloadTimeCurrent = reloadTime;
+            ammoCurrent = ammo;
+            AudioSource.Play();
+        }
+    }
+
+    public override void shoot()
+    {
+        if (ammoCurrent > 0 && reloadTimeCurrent <= 0)
+        {
+            if (ShootingTempCurrent <= 0)
             {
-                //shootingTempCurrent = 0.2f;
-                audioSource.clip = outOfAmmoSound;
-                audioSource.Play();
+                AudioSource.clip = ShootingSound;
+                ammoCurrent -= 1;
+                ShootingTempCurrent = ShootingTemp;
+        
+                float rnd = ((new Random((uint)DateTime.UtcNow.Millisecond * (uint)DateTime.UtcNow.Millisecond)).NextFloat(2)-1);
+                float rotateWithSpread = (rnd * accuracy);
+                float angle = 0f;
+                Vector3 axis;
+                //Получение оси и угла поворота
+                transform.rotation.ToAngleAxis(out angle, out axis);
+        
+                Instantiate(bullet, currentShootingPoint.transform.position, Quaternion.AngleAxis((angle + rotateWithSpread), axis));
+                
+                
+                if(shootingAnimation != null) Instantiate(shootingAnimation, currentShootingPoint.transform.position, Quaternion.Euler(0f, 0f, Mathf.Atan2(rotate.y, rotate.x)));
+                AudioSource.Play();
+            }
+        }
+        else
+        {
+            if (ShootingTempCurrent <= 0 && reloadTimeCurrent <= 0)
+            {
+                //ShootingTempCurrent = 0.2f;
+                AudioSource.clip = outOfAmmoSound;
+                AudioSource.Play();
             }
             
         }
     }
 
-    public void specialShoot()
+    public override  void specialShoot()
     {
         Debug.Log("Special shoot! Boom!");
     }
 
-    public void setPlayerBody(Rigidbody2D rigidbody2D)
+    public int Ammo
     {
-        this.player = rigidbody2D;
+        get => ammo;
+        set => ammo = value;
     }
 
-    public void setPlayerFace(Animator face)
+    public int AmmoCurrent
     {
-        this.playerFace = face;
+        get => ammoCurrent;
+        set => ammoCurrent = value;
     }
 
-    public void setPlayerSprite(SpriteRenderer spriteRenderer)
+    public float ReloadTime
     {
-        this.playerSprite = spriteRenderer;
+        get => reloadTime;
+        set => reloadTime = value;
     }
 
-    public void usedByPlayer(bool used)
+    public float ReloadTimeCurrent
     {
-        this.isUsedByPlayer = used;
+        get => reloadTimeCurrent;
+        set => reloadTimeCurrent = value;
     }
 
-    public float getAmmoMax()
+    public GameObject Bullet
     {
-        return this.ammo;
+        get => bullet;
+        set => bullet = value;
     }
 
-    public float getAmmoCurrent()
+    public GameObject SpecialBullet
     {
-        return this.ammoCurrent;
+        get => specialBullet;
+        set => specialBullet = value;
     }
-    public bool IsUsedByPlayer => isUsedByPlayer;
+
+    public float BulletDamage
+    {
+        get => bulletDamage;
+        set => bulletDamage = value;
+    }
+
+    public float BulletSpeed
+    {
+        get => bulletSpeed;
+        set => bulletSpeed = value;
+    }
+
+    public float BulletLifeTime
+    {
+        get => bulletLifeTime;
+        set => bulletLifeTime = value;
+    }
+
+    public float Accuracy
+    {
+        get => accuracy;
+        set => accuracy = value;
+    }
+
+    public GameObject ShootingPoint
+    {
+        get => shootingPoint;
+        set => shootingPoint = value;
+    }
+
+    public GameObject ShootingPointFlip
+    {
+        get => shootingPointFlip;
+        set => shootingPointFlip = value;
+    }
+
+    public GameObject CurrentShootingPoint
+    {
+        get => currentShootingPoint;
+        set => currentShootingPoint = value;
+    }
+
+    public GameObject ShootingAnimation
+    {
+        get => shootingAnimation;
+        set => shootingAnimation = value;
+    }
+
+    public AudioClip OutOfAmmoSound
+    {
+        get => outOfAmmoSound;
+        set => outOfAmmoSound = value;
+    }
+
+    public AudioClip ReloadSound
+    {
+        get => reloadSound;
+        set => reloadSound = value;
+    }
+
+    public Vector3 Rotate
+    {
+        get => rotate;
+        set => rotate = value;
+    }
 }

@@ -24,9 +24,9 @@ public class UI : MonoBehaviour
             totalText.Append("Current player speed ->" + PlayerControl.getSpeedCurrent() + "\n");
             totalText.Append("Is weapon near ->" + PlayerControl.IsWeaponNear() + "\n");
             totalText.Append("Weapon ->" + PlayerControl.getWeapon().name + "\n");
-            totalText.Append("AMMO ->" + PlayerControl.getWeapon().getAmmoCurrent() + "/" +
-                             PlayerControl.getWeapon().getAmmoMax() + "\n");
-            totalText.Append("This is developer mode!");
+            totalText.Append("AMMO ->" + PlayerControl.getWeapon().AmmoCurrent + "/" +
+                             PlayerControl.getWeapon().Ammo + "\n");
+            totalText.Append("\nThis is developer mode!");
 
             text.SetText(totalText.ToString());
         }

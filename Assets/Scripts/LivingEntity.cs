@@ -22,6 +22,7 @@ public class LivingEntity : MonoBehaviour
         if (HP <= 0)
         {
             Instantiate(deathAnimation, this.transform.position, transform.rotation);
+            Instantiate(this, this.transform.position, transform.rotation);
             Destroy(gameObject);
         }
     }
