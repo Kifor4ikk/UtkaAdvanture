@@ -18,7 +18,6 @@ public abstract class SimpleGun : Weapon
     //Bullet 
     [SerializeField] private GameObject bullet;
     [SerializeField] private GameObject specialBullet;
-    [SerializeField] private float bulletDamage;
     [SerializeField] private float bulletSpeed;
     [SerializeField] private float bulletLifeTime;
     //accuracy from 0 to 180
@@ -38,6 +37,7 @@ public abstract class SimpleGun : Weapon
     private Vector3 rotate;
     void Start()
     {
+        setParams();
         ShootingTemp /= BoosterVariables.gameSpeed;
         SpecialShootingTemp /= BoosterVariables.gameSpeed;
         reloadTime /= BoosterVariables.gameSpeed;
@@ -49,7 +49,7 @@ public abstract class SimpleGun : Weapon
         if (accuracy > 180) accuracy = 180;
         if (accuracy < 0) accuracy = 0;
         accuracy /= 2;
-        bullet.GetComponent<SimpleBullet>().setDamage(bulletDamage);
+        bullet.GetComponent<SimpleBullet>().setDamage(Damage);
         bullet.GetComponent<SimpleBullet>().setLifeTime(bulletLifeTime);
         bullet.GetComponent<SimpleBullet>().setSpeed(bulletSpeed);
         
@@ -74,7 +74,6 @@ public abstract class SimpleGun : Weapon
             //ANIMATION
             if (PlayerSprite.sprite.name.Contains(EntityName + "_back"))
             {
-                Debug.Log("Test -> ");
                 GunImage.sortingOrder = -3;
                 if (HandsImage != null) HandsImage.sortingOrder = -3;
                 transform.position = new Vector3(PlayerBody.transform.position.x-0.01f, PlayerBody.transform.position.y-0.1f);
@@ -106,10 +105,10 @@ public abstract class SimpleGun : Weapon
         else
         {
             if (HandsImage != null) HandsImage.enabled = false;
-        }
+        };
     }
 
-    public override void reload()
+    public void reload()
     {
         if (ammoCurrent < ammo && ShootingTempCurrent <= 0)
         {
@@ -195,12 +194,6 @@ public abstract class SimpleGun : Weapon
     {
         get => specialBullet;
         set => specialBullet = value;
-    }
-
-    public float BulletDamage
-    {
-        get => bulletDamage;
-        set => bulletDamage = value;
     }
 
     public float BulletSpeed

@@ -28,24 +28,40 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private Animator foot;
 
     //Gun settings
-    private static SimpleGun gun = null;
+    private static Weapon gun = null;
     private static GameObject gunObject = null;
     private static bool isWeaponNear = false;
-
     private GameObject gunNear;
 
     [SerializeField] private SpriteRenderer hand;
     private float timeToDrawHand;
+    
+    //Life settings
+    public int healh;
+    public int isHelmet;
+    public int isArmor;
+    [SerializeField] private float tookDamageTime;
+    public float tookDamageCurrent;
     void Start()
     {
         playerBody = GetComponent<Rigidbody2D>();
         playerTakeBox = GetComponent<CircleCollider2D>();
         speedCurrent = Speed;
+        tookDamageCurrent = 0;
+        healh = 3;
+        isHelmet = 1;
+        isArmor = 1;
     }
 
     void Update()
     {
         
+        if (tookDamageCurrent >= 0) tookDamageCurrent -= Time.deltaTime;
+        if(isHelmet > 0) head.SetBool("isArmored", true );
+        else head.SetBool("isArmored", false );
+        if(isArmor > 0) body.SetBool("isArmored", true );
+        else body.SetBool("isArmored", false );
+        if (healh <= 0) Destroy(this.gameObject);
         //Set animation
         vec.x = Input.GetAxisRaw("Horizontal");
         vec.y = Input.GetAxisRaw("Vertical");
@@ -67,26 +83,24 @@ public class PlayerControl : MonoBehaviour
         foot.SetFloat("Speed", vec.magnitude);
         
         //Drop/Get weapon
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            Debug.Log("Pressed Z");
             if (isWeaponNear)
             {
                 if (gunObject != null)
                 {
-                    gunObject.GetComponent<SimpleGun>().IsUsedByPlayer = false;
+                    gunObject.GetComponent<Weapon>().IsUsedByPlayer = false;
                     Instantiate(gunObject, playerBody.transform.position, transform.rotation);
                     Destroy(gunObject);
                 }
                 
                 gunObject = gunNear;
-                gunObject.GetComponent<SimpleGun>().IsUsedByPlayer = true;
+                gunObject.GetComponent<Weapon>().IsUsedByPlayer = true;
+                gunObject.GetComponent<Weapon>().PlayerFace = face;
+                gunObject.GetComponent<Weapon>().PlayerBody = playerBody;
+                gunObject.GetComponent<Weapon>().PlayerSprite = (body.GetComponent<SpriteRenderer>());
                 
-                gunObject.GetComponent<SimpleGun>().PlayerFace = face;
-                gunObject.GetComponent<SimpleGun>().PlayerBody = playerBody;
-                gunObject.GetComponent<SimpleGun>().PlayerSprite = (body.GetComponent<SpriteRenderer>());
-                
-                gun = gunObject.GetComponent<SimpleGun>();
+                gun = gunObject.GetComponent<Weapon>();
                 gunNear = null;
             }
             
@@ -106,10 +120,13 @@ public class PlayerControl : MonoBehaviour
                 slowDownTimeCurrent = 0.2f;
             }
 
-            if (Input.GetKey(KeyCode.R))
+            if (gun is SimpleGun)
             {
-                gun.reload();
-                slowDownTimeCurrent = 2f;
+                if (Input.GetKey(KeyCode.R))
+                {
+                    gun.GetComponent<SimpleGun>().reload();
+                    slowDownTimeCurrent = 2f;
+                }
             }
         }
         //SpeedChange
@@ -140,10 +157,32 @@ public class PlayerControl : MonoBehaviour
         
     }    
     
-    
-    void OnTriggerStay2D (Collider2D trigger)
+    void OnCollisionEnter2D(Collision2D collider2D)
     {
-        if (trigger.gameObject.tag == "weapon" && !trigger.gameObject.GetComponent<SimpleGun>().IsUsedByPlayer)
+        Debug.Log("SALO CONTACT " + collider2D);
+        if (collider2D.gameObject.tag == "EnemyBullet")
+        {
+            if (tookDamageCurrent <= 0)
+            {
+                slowDownTimeCurrent = 1F;
+                if (isHelmet > 0) isHelmet -= 1;
+                else
+                {
+                    if (isArmor > 0) isArmor -= 1;
+                    else
+                    {
+                        healh -= 1;
+                    }
+                }
+            }
+            Destroy(collider2D.gameObject);
+            tookDamageCurrent = tookDamageTime;
+        }
+        
+    }
+    void OnTriggerStay2D(Collider2D trigger)
+    {
+        if (trigger.gameObject.tag == "weapon" && !trigger.gameObject.GetComponent<Weapon>().IsUsedByPlayer)
         {
             gunNear = trigger.gameObject;
             isWeaponNear = true;
@@ -178,8 +217,14 @@ public class PlayerControl : MonoBehaviour
         return isWeaponNear;
     }
 
-    public static SimpleGun getWeapon()
+    public static Weapon getWeapon()
     {
         return gun;
+    }
+
+    public float SlowDownTimeCurrent
+    {
+        get => slowDownTimeCurrent;
+        set => slowDownTimeCurrent = value;
     }
 }

@@ -25,8 +25,6 @@ public class SCAR : SimpleGun
                 //Получение оси и угла поворота
                 transform.rotation.ToAngleAxis(out angle, out axis);
                 Instantiate(Bullet, CurrentShootingPoint.transform.position, Quaternion.AngleAxis((angle + rotateWithSpread), axis));
-                
-                Debug.Log("пук нахуй");
                 if(ShootingAnimation != null) Instantiate(ShootingAnimation, CurrentShootingPoint.transform.position, Quaternion.Euler(0f, 0f, Mathf.Atan2(Rotate.y, Rotate.x)));
                 AudioSource.Play();
             }
