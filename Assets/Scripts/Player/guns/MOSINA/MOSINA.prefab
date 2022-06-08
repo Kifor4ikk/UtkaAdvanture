@@ -104,28 +104,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14f18178014e02145a61bbc5a6eff3e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 9999
   shootingTemp: 2
   specialShootingTemp: 10
-  ammo: 5
-  reloadTime: 4
-  bullet: {fileID: 6742256599201734560, guid: 7064f3fd2d4c58d489aaa11418e1b048, type: 3}
-  specialBullet: {fileID: 6742256599201734560, guid: 7064f3fd2d4c58d489aaa11418e1b048, type: 3}
-  bulletDamage: 999
-  bulletSpeed: 20
-  bulletLifeTime: 10
   handsImage: {fileID: 5604212270181081007}
-  shootingPoint: {fileID: 2228010442347705473}
-  shootingPointFlip: {fileID: 2228010442262265419}
-  shootingAnimation: {fileID: 0}
+  gunAnimation: {fileID: 0}
   playerSprite: {fileID: 0}
   playerFace: {fileID: 0}
   player: {fileID: 0}
   audioSource: {fileID: 388889513462302303}
   shootingSound: {fileID: 8300000, guid: 49f574ae9581f354681c63f9bc430e89, type: 3}
+  entityName: player
+  ammo: 5
+  reloadTime: 4
+  bullet: {fileID: 2063678822875960931, guid: a65d9c218add4eb4c832c5e81fcfbbad, type: 3}
+  specialBullet: {fileID: 6742256599201734560, guid: 7064f3fd2d4c58d489aaa11418e1b048, type: 3}
+  bulletSpeed: 20
+  bulletLifeTime: 10
+  accuracy: 0
+  shootingPoint: {fileID: 2228010442347705473}
+  shootingPointFlip: {fileID: 2228010442262265419}
   outOfAmmoSound: {fileID: 8300000, guid: f6b15d3c9fe473844988bfbd4eab653f, type: 3}
   reloadSound: {fileID: 8300000, guid: 6bc4bcf658993ae47b88bc41c31947a0, type: 3}
-  entityName: player
-  isUsedByPlayer: 0
 --- !u!95 &2761955842296177470
 Animator:
   serializedVersion: 4

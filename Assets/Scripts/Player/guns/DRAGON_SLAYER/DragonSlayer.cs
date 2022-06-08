@@ -6,9 +6,11 @@ using UnityEngine;
 public class DragonSlayer : SimpleMeleeWeapon
 {
 
+    [SerializeField] private Animator _animator;
     void Start()
     {
         setParams();
+        GunAnimation = _animator;
     }
     
     void Update()
@@ -32,13 +34,6 @@ public class DragonSlayer : SimpleMeleeWeapon
     public override void specialShoot()
     {
     }
-
-
-
-    // void OnTriggerStay2D(Collider2D trigger)
-    // {
-    //     Debug.Log("Collision!");
-    //     if (trigger.gameObject.tag == "Enemy") trigger.gameObject.GetComponent<LivingEntity>().takeDamage((int) Damage);
-    // }
+    
     
 }

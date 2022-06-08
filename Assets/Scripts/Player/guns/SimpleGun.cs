@@ -28,13 +28,15 @@ public abstract class SimpleGun : Weapon
     [SerializeField] private GameObject shootingPointFlip;
     [NonSerialized] private GameObject currentShootingPoint;
     //Shooting animation(when u click shoot spawn particle before trunk(ствол)
-    [SerializeField] private GameObject shootingAnimation;
     //Audio
     [SerializeField] private AudioClip outOfAmmoSound;
     [SerializeField] private AudioClip reloadSound;
 
+    
+    private Vector3 rotateSimpleGun;
 
-    private Vector3 rotate;
+    private float fixX;
+    private float fixY;
     void Start()
     {
         setParams();
@@ -45,7 +47,6 @@ public abstract class SimpleGun : Weapon
         bulletLifeTime /= BoosterVariables.gameSpeed;
         GunImage = this.GetComponent<SpriteRenderer>();
         GunAnimation = this.GetComponent<Animator>();
-
         if (accuracy > 180) accuracy = 180;
         if (accuracy < 0) accuracy = 0;
         accuracy /= 2;
@@ -53,7 +54,7 @@ public abstract class SimpleGun : Weapon
         bullet.GetComponent<SimpleBullet>().setLifeTime(bulletLifeTime);
         bullet.GetComponent<SimpleBullet>().setSpeed(bulletSpeed);
         
-        AudioSource.volume = BoosterVariables.volume;
+        
         
     }
 
@@ -66,46 +67,58 @@ public abstract class SimpleGun : Weapon
             GunAnimation.SetFloat("Reload", reloadTimeCurrent);
             PlayerFace.SetFloat("Shooting", ShootingTempCurrent);
             //Shooting cooldown
-            if (HandsImage != null) HandsImage.enabled = true;
+            if (HandsImage != null && reloadTimeCurrent < 0) HandsImage.enabled = true;
+            else HandsImage.enabled = false;
             if (ShootingTempCurrent > 0) ShootingTempCurrent -= Time.deltaTime;
             if (SpecialShootingTempCurrent > 0) SpecialShootingTempCurrent -= Time.deltaTime;
             if (reloadTimeCurrent > 0) reloadTimeCurrent -= Time.deltaTime;
-            
+
+            fixX = 0.0f;
+            fixY = -0.2f;
             //ANIMATION
             if (PlayerSprite.sprite.name.Contains(EntityName + "_back"))
             {
                 GunImage.sortingOrder = -3;
                 if (HandsImage != null) HandsImage.sortingOrder = -3;
-                transform.position = new Vector3(PlayerBody.transform.position.x-0.01f, PlayerBody.transform.position.y-0.1f);
+                if (PlayerSprite.sprite.name.Contains("left")) fixX = -0.2f;
+                if (PlayerSprite.sprite.name.Contains("right")) fixX = +0.2f;
+                
+                    fixY = -0.08f;
+                if (PlayerSprite.sprite.name.Contains("player_back_body")) fixY = +0.12f;
+                transform.position = new Vector3(PlayerBody.transform.position.x + fixX, PlayerBody.transform.position.y + fixY);
             }
             else
             {
                 GunImage.sortingOrder = 2;
                 if (HandsImage != null) HandsImage.sortingOrder = 4;
-                transform.position = new Vector3(PlayerBody.transform.position.x-0.03f, PlayerBody.transform.position.y-0.2f);
+                if (PlayerSprite.sprite.name.Contains("left")) fixX = -0.05f;
+                if (PlayerSprite.sprite.name.Contains("right")) fixX = +0.05f;
+                transform.position = new Vector3(PlayerBody.transform.position.x + fixX, PlayerBody.transform.position.y + fixY);
             }
 
-            rotate = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-            float rotateY = Mathf.Atan2(rotate.y, rotate.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0f, 0f, rotateY);
+            rotateSimpleGun = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+            float rotateSimpleGunY = Mathf.Atan2(rotateSimpleGun.y, rotateSimpleGun.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0f, 0f, rotateSimpleGunY);
 
-            if (Mathf.Atan2(rotate.y, rotate.x) > 1.57f || Mathf.Atan2(rotate.y, rotate.x) < -1.57f)
+            if (Mathf.Atan2(rotateSimpleGun.y, rotateSimpleGun.x) > 1.57f || Mathf.Atan2(rotateSimpleGun.y, rotateSimpleGun.x) < -1.57f)
             {
                 
                 GunImage.flipY = true;
+                if (HandsImage != null) HandsImage.flipY = true;
                 currentShootingPoint = shootingPointFlip;
                 
             }
             else
             {
                 GunImage.flipY = false;
+                if (HandsImage != null) HandsImage.flipY = false;
                 currentShootingPoint = shootingPoint;
             }
         }
         else
         {
             if (HandsImage != null) HandsImage.enabled = false;
-        };
+        }
     }
 
     public void reload()
@@ -135,11 +148,7 @@ public abstract class SimpleGun : Weapon
                 Vector3 axis;
                 //Получение оси и угла поворота
                 transform.rotation.ToAngleAxis(out angle, out axis);
-        
                 Instantiate(bullet, currentShootingPoint.transform.position, Quaternion.AngleAxis((angle + rotateWithSpread), axis));
-                
-                
-                if(shootingAnimation != null) Instantiate(shootingAnimation, currentShootingPoint.transform.position, Quaternion.Euler(0f, 0f, Mathf.Atan2(rotate.y, rotate.x)));
                 AudioSource.Play();
             }
         }
@@ -232,12 +241,6 @@ public abstract class SimpleGun : Weapon
         set => currentShootingPoint = value;
     }
 
-    public GameObject ShootingAnimation
-    {
-        get => shootingAnimation;
-        set => shootingAnimation = value;
-    }
-
     public AudioClip OutOfAmmoSound
     {
         get => outOfAmmoSound;
@@ -250,9 +253,9 @@ public abstract class SimpleGun : Weapon
         set => reloadSound = value;
     }
 
-    public Vector3 Rotate
+    public Vector3 RotateSimpleGun
     {
-        get => rotate;
-        set => rotate = value;
+        get => rotateSimpleGun;
+        set => rotateSimpleGun = value;
     }
 }

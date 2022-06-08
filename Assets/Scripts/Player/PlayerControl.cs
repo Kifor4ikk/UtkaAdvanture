@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
@@ -35,13 +36,16 @@ public class PlayerControl : MonoBehaviour
 
     [SerializeField] private SpriteRenderer hand;
     private float timeToDrawHand;
-    
+
     //Life settings
-    public int healh;
+    public float healh;
     public int isHelmet;
     public int isArmor;
     [SerializeField] private float tookDamageTime;
     public float tookDamageCurrent;
+
+    UnityEngine.Color damageColor = new UnityEngine.Color(1, 0.5613208f, 0.5613208f);
+
     void Start()
     {
         playerBody = GetComponent<Rigidbody2D>();
@@ -53,15 +57,29 @@ public class PlayerControl : MonoBehaviour
         isArmor = 1;
     }
 
+    //ЛЮТЫЙ БЛЯТЬ КОСТЫЛЬ МНЕ ТАК СТЫДНО НЕ ПЕРЕДАТЬ СЛОВАМИ
+    private float reloadTime = 0;
+
     void Update()
     {
-        
+        //player animation
         if (tookDamageCurrent >= 0) tookDamageCurrent -= Time.deltaTime;
-        if(isHelmet > 0) head.SetBool("isArmored", true );
-        else head.SetBool("isArmored", false );
-        if(isArmor > 0) body.SetBool("isArmored", true );
-        else body.SetBool("isArmored", false );
+        if (isHelmet > 0) head.SetBool("isArmored", true);
+        else head.SetBool("isArmored", false);
+        if (isArmor > 0) body.SetBool("isArmored", true);
+        else body.SetBool("isArmored", false);
         if (healh <= 0) Destroy(this.gameObject);
+        if (tookDamageCurrent > 0)
+        {
+            head.GetComponent<SpriteRenderer>().color = damageColor;
+            body.GetComponent<SpriteRenderer>().color = damageColor;
+        }
+        else
+        {
+            head.GetComponent<SpriteRenderer>().color = Color.white;
+            body.GetComponent<SpriteRenderer>().color = Color.white;
+        }
+
         //Set animation
         vec.x = Input.GetAxisRaw("Horizontal");
         vec.y = Input.GetAxisRaw("Vertical");
@@ -81,30 +99,29 @@ public class PlayerControl : MonoBehaviour
         foot.SetFloat("Horizontal", Camera.main.ScreenToWorldPoint(Input.mousePosition).x - playerBody.position.x);
         foot.SetFloat("Vertical", Camera.main.ScreenToWorldPoint(Input.mousePosition).y - playerBody.position.y);
         foot.SetFloat("Speed", vec.magnitude);
-        
+
         //Drop/Get weapon
-        if (Input.GetKeyDown(KeyCode.F))
+        reloadTime = 0;
+        if (gun != null && gun is SimpleGun) reloadTime = ((SimpleGun) gun).ReloadTimeCurrent;
+        if (Input.GetKeyDown(KeyCode.F) && reloadTime <= 0 && isWeaponNear)
         {
-            if (isWeaponNear)
+            if (gunObject != null)
             {
-                if (gunObject != null)
-                {
-                    gunObject.GetComponent<Weapon>().IsUsedByPlayer = false;
-                    Instantiate(gunObject, playerBody.transform.position, transform.rotation);
-                    Destroy(gunObject);
-                }
-                
-                gunObject = gunNear;
-                gunObject.GetComponent<Weapon>().IsUsedByPlayer = true;
-                gunObject.GetComponent<Weapon>().PlayerFace = face;
-                gunObject.GetComponent<Weapon>().PlayerBody = playerBody;
-                gunObject.GetComponent<Weapon>().PlayerSprite = (body.GetComponent<SpriteRenderer>());
-                
-                gun = gunObject.GetComponent<Weapon>();
-                gunNear = null;
+                gunObject.GetComponent<Weapon>().IsUsedByPlayer = false;
+                Instantiate(gunObject, playerBody.transform.position, transform.rotation);
+                Destroy(gunObject);
             }
-            
+
+            gunObject = gunNear;
+            gunObject.GetComponent<Weapon>().IsUsedByPlayer = true;
+            gunObject.GetComponent<Weapon>().PlayerFace = face;
+            gunObject.GetComponent<Weapon>().PlayerBody = playerBody;
+            gunObject.GetComponent<Weapon>().PlayerSprite = (body.GetComponent<SpriteRenderer>());
+
+            gun = gunObject.GetComponent<Weapon>();
+            gunNear = null;
         }
+
         //Shooting
         if (gunObject != null)
         {
@@ -129,6 +146,7 @@ public class PlayerControl : MonoBehaviour
                 }
             }
         }
+
         //SpeedChange
         speedCurrent = Speed;
         if (Input.GetKey(KeyCode.LeftShift) && dashCoolDownCurrent > 0 || slowDownTimeCurrent > 0)
@@ -138,6 +156,7 @@ public class PlayerControl : MonoBehaviour
                 speedCurrent = Speed / 1.5F;
                 slowDownTimeCurrent -= Time.deltaTime;
             }
+
             //Dash
             if (Input.GetKey(KeyCode.LeftShift) && dashCoolDownCurrent > 0)
             {
@@ -146,40 +165,42 @@ public class PlayerControl : MonoBehaviour
                 speedCurrent = Speed * 1.5f;
             }
         }
-        else { speedCurrent = Speed; }
-        
+        else
+        {
+            speedCurrent = Speed;
+        }
+
         if (timeBeforeRegenDash <= 0 && dashCoolDownCurrent < dashCoolDownMax) dashCoolDownCurrent += Time.deltaTime;
         if (timeBeforeRegenDash > 0) timeBeforeRegenDash -= Time.deltaTime;
         //Weapon near check
-        if (timeToDrawHand > 0) { hand.enabled = true; timeToDrawHand -= Time.deltaTime; }
-        else hand.enabled = false;
-
-        
-    }    
-    
-    void OnCollisionEnter2D(Collision2D collider2D)
-    {
-        Debug.Log("SALO CONTACT " + collider2D);
-        if (collider2D.gameObject.tag == "EnemyBullet")
+        if (timeToDrawHand > 0)
         {
-            if (tookDamageCurrent <= 0)
+            hand.enabled = true;
+            timeToDrawHand -= Time.deltaTime;
+        }
+        else hand.enabled = false;
+    }
+
+
+
+    public void damagePlayer(float damage)
+    {
+        if (tookDamageCurrent <= 0 && damage > 0)
+        {
+            slowDownTimeCurrent = 1F;
+            if (isHelmet > 0) isHelmet -= 1;
+            else
             {
-                slowDownTimeCurrent = 1F;
-                if (isHelmet > 0) isHelmet -= 1;
+                if (isArmor > 0) isArmor -= 1;
                 else
                 {
-                    if (isArmor > 0) isArmor -= 1;
-                    else
-                    {
-                        healh -= 1;
-                    }
+                    healh -= damage;
                 }
             }
-            Destroy(collider2D.gameObject);
-            tookDamageCurrent = tookDamageTime;
         }
-        
+        if(tookDamageCurrent <= 0) tookDamageCurrent = tookDamageTime;
     }
+    
     void OnTriggerStay2D(Collider2D trigger)
     {
         if (trigger.gameObject.tag == "weapon" && !trigger.gameObject.GetComponent<Weapon>().IsUsedByPlayer)
@@ -199,8 +220,8 @@ public class PlayerControl : MonoBehaviour
     {
         playerBody.MovePosition(playerBody.position + vec * speedCurrent * Time.fixedDeltaTime);
     }
-    
-    
+
+
     //GETTER AND SETTERS
     public static float getDashCooldownCurrent()
     {

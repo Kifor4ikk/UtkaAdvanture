@@ -61,8 +61,11 @@ public abstract class Weapon : MonoBehaviour
         gunAnimation = this.GetComponent<Animator>();
         gunBody = this.GetComponent<Rigidbody2D>();
         gunHitBox = this.GetComponent<Collider2D>();
+        gunBody.gravityScale = 0.0f;
+        
         shootingTempCurrent = 0;
         this.tag = "weapon";
+        audioSource.volume = BoosterVariables.volume;
     }
 
     //Dont need in melee
@@ -198,5 +201,11 @@ public abstract class Weapon : MonoBehaviour
     {
         get => damage;
         set => damage = value;
+    }
+
+    public Vector3 Rotate
+    {
+        get => rotate;
+        set => rotate = value;
     }
 }

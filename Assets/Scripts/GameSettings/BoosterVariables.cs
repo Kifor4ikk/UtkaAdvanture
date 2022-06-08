@@ -6,7 +6,7 @@ using UnityEngine;
 public class BoosterVariables : MonoBehaviour
 {
     //VolumeSetting
-    [SerializeField] public static float volume = 0.1f;
+    [SerializeField] public static float volume = 0.5f;
 
     //Booster settings
     [SerializeField] private static float boosterTimeMax; 
