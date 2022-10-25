@@ -53,9 +53,6 @@ public abstract class SimpleGun : Weapon
         bullet.GetComponent<SimpleBullet>().setDamage(Damage);
         bullet.GetComponent<SimpleBullet>().setLifeTime(bulletLifeTime);
         bullet.GetComponent<SimpleBullet>().setSpeed(bulletSpeed);
-        
-        
-        
     }
 
     void Update()

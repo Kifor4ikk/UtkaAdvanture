@@ -12,6 +12,10 @@ public class LivingEntity : MonoBehaviour
     [SerializeField] private GameObject deathAnimation;
     [SerializeField] private AudioSource audio;
 
+    private float timeDamaged = 0.15F;
+    private float timeDamagedCurrent = 0.0F;
+    
+    private Color damageColor = new Color(1, 0.5613208f, 0.5613208f);
     void Start()
     {
         HP = HPMax;
@@ -21,6 +25,14 @@ public class LivingEntity : MonoBehaviour
     }
     void FixedUpdate()
     {
+        if (timeDamagedCurrent > 0)
+        {
+            this.GetComponent<SpriteRenderer>().color = damageColor;
+            timeDamagedCurrent -= Time.fixedDeltaTime;
+        }
+        else if (timeDamagedCurrent <= 0 && this.GetComponent<SpriteRenderer>().color != Color.white)
+            this.GetComponent<SpriteRenderer>().color = Color.white;
+       
         if (HP <= 0)
         {
             if(deathAnimation != null) Instantiate(deathAnimation, this.transform.position, transform.rotation);
@@ -32,6 +44,7 @@ public class LivingEntity : MonoBehaviour
     public void takeDamage(int damage)
     {
         this.HP -= damage;
+        this.timeDamagedCurrent = timeDamaged;
     }
 
     public int getHP()

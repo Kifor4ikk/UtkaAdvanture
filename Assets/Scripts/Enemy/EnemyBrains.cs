@@ -84,12 +84,6 @@ public class EnemyBrains : MonoBehaviour
     {
         RaycastHit2D hit2D = Physics2D.Raycast(shootingPos.transform.position, shootingPos.transform.right);
 
-        if (hit2D.collider != null)
-        {
-            //hit2D.collider.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
-            Debug.Log( "->" + hit2D.collider.gameObject.tag + " | ");
-        }
-
         if (currentShootingTemp > 0) currentShootingTemp -= Time.fixedDeltaTime;
 
         if (currentShootingTemp <= 0 && ammoCurrent > 0 && hit2D.collider != null)
@@ -98,10 +92,7 @@ public class EnemyBrains : MonoBehaviour
             {
                 ammoCurrent -= 1;
                 currentShootingTemp = shootingTemp;
-                float rnd =
-                    ((new Random((uint) DateTime.UtcNow.Millisecond * (uint) DateTime.UtcNow.Millisecond))
-                     .NextFloat(2) -
-                     1);
+                float rnd = ((new Random((uint) DateTime.UtcNow.Millisecond * (uint) DateTime.UtcNow.Millisecond)).NextFloat(2) - 1);
                 float rotateWithSpread = (rnd * accuracy);
                 float angle = 0f;
                 Vector3 axis;
@@ -131,7 +122,12 @@ public class EnemyBrains : MonoBehaviour
 
     void playerStalkingMove()
     {
-        transform.position =
-            Vector2.MoveTowards(transform.position, player.transform.position, speed * Time.fixedDeltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, player.transform.position, speed * Time.fixedDeltaTime);
     }
+
+    void justMoving()
+    {
+
+    }
+
 }

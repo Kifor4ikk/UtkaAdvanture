@@ -23,7 +23,6 @@ public class UI : MonoBehaviour
             totalText.Append("Dash cooldown ->" + PlayerControl.getDashCooldownCurrent() + "\n");
             totalText.Append("Current player speed ->" + PlayerControl.getSpeedCurrent() + "\n");
             totalText.Append("Is weapon near ->" + PlayerControl.IsWeaponNear() + "\n");
-            totalText.Append("Weapon ->" + PlayerControl.getWeapon().name + "\n");
             totalText.Append("\nThis is developer mode!");
 
             text.SetText(totalText.ToString());

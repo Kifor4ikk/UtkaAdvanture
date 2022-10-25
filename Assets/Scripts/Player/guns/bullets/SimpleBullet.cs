@@ -36,6 +36,7 @@ public class SimpleBullet : MonoBehaviour
         
         if (damagableTag.Contains(collision.gameObject.tag))
         {
+            Debug.Log("--->->->" + collision.gameObject.tag);
             if (collision.gameObject.tag == "Player")
             {
                 impactAnimation.GetComponent<ImpactScript>().IsImpactInLiving = true;
